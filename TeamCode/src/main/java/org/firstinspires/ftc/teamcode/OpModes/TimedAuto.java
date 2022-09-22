@@ -18,7 +18,7 @@ public class TimedAuto extends OpMode {
 
     public void start() {
         count = 0;
-        resetStartTime();
+        resetRuntime();
         lastTime = getRuntime();
     }
 
