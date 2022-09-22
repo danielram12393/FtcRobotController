@@ -41,34 +41,6 @@ public class MecanumDriveConfig {
         }
     }
 
-    public void setMotorPower(double x, double y, double rx) {
-            double powerFrontLeft = y + x + rx;
-            double powerFrontRight = y - x - rx;
-            double powerBackLeft = y - x + rx;
-            double powerBackRight = y + x - rx;
-
-            if (Math.abs(powerFrontLeft) > 1 || Math.abs(powerBackLeft) > 1 ||
-                    Math.abs(powerFrontRight) > 1 || Math.abs(powerBackRight) > 1) {
-                // Find the largest power
-                double max;
-                max = Math.max(Math.abs(powerFrontLeft), Math.abs(powerBackLeft));
-                max = Math.max(Math.abs(powerFrontRight), max);
-                max = Math.max(Math.abs(powerBackRight), max);
-
-                // Divide everything by max (it's positive so we don't need to worry
-                // about signs)
-                powerFrontLeft /= max;
-                powerBackLeft /= max;
-                powerFrontRight /= max;
-                powerBackRight /= max;
-            }
-
-            leftFront.setPower(powerFrontLeft);
-            rightFront.setPower(powerFrontRight);
-            leftRear.setPower(powerBackLeft);
-            rightRear.setPower(powerBackRight);
-    }
-
     public ArrayList<TestItem> getTests() {
         ArrayList<TestItem> tests = new ArrayList<>();
         tests.add(new MotorTest("front left motor and ticks", .5, leftFront));
