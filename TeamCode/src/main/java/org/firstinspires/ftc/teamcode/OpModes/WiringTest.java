@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.OpModes;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Hardware.FinalBoard;
@@ -18,7 +19,7 @@ public class WiringTest extends OpMode {
     int testNum;
 
     public void init() {
-        board.init(hardwareMap);
+        board.init(hardwareMap, DcMotor.RunMode.RUN_USING_ENCODER);
         tests = board.getTests();
     }
 

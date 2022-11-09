@@ -9,7 +9,7 @@ import org.firstinspires.ftc.teamcode.Hardware.FinalBoard;
 @Disabled
 public class ToggleButton extends OpMode {
     FinalBoard board = new FinalBoard();
-    boolean aAlreadyPressed;
+    boolean xAlreadyPressed;
     boolean motorOn;
 
     @Override
@@ -19,7 +19,7 @@ public class ToggleButton extends OpMode {
 
 
     public void loop() {
-        if(gamepad1.a && !aAlreadyPressed) {
+        if(gamepad1.x && !xAlreadyPressed) {
             motorOn = !motorOn;
             telemetry.addData("Motor", motorOn);
             if(motorOn) {
@@ -29,7 +29,7 @@ public class ToggleButton extends OpMode {
                 board.setMotorSpeed(0.0);
             }
         }
-        aAlreadyPressed = gamepad1.a;
+        xAlreadyPressed = gamepad1.x;
     }
 
 

@@ -29,43 +29,53 @@
 
 package org.firstinspires.ftc.teamcode.OpModes;
 
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.teamcode.Hardware.LiftConfig;
 import org.firstinspires.ftc.teamcode.Hardware.MecanumDriveConfig;
-import org.firstinspires.ftc.teamcode.HardwareTests.TestItem;
 
-import java.util.ArrayList;
 
-/**
- * This OpMode uses the common Pushbot hardware class to define the devices on the robot.
- * All device access is managed through the HardwarePushbot class.
- * The code is structured as a LinearOpMode
- *
- * This particular OpMode executes a POV Game style Teleop for a PushBot
- * In this mode the left stick moves the robot FWD and back, the Right stick turns left and right.
- * It raises and lowers the claw using the Gampad Y and A buttons respectively.
- * It also opens and closes the claws slowly using the left and right Bumper buttons.
- *
- * Use Android Studios to Copy this Class, and Paste it into your team's code folder with a new name.
- * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
- */
-@TeleOp(name="Mecanum: Teleop", group="Mecanum")
-public class MecanumTeleOp extends OpMode {
+
+@TeleOp
+public class PowerPlayBot extends OpMode {
 
     /* Declare OpMode members. */
     MecanumDriveConfig robot = new MecanumDriveConfig();   // Use a Pushbot's hardware
 
-    @Override
+    LiftConfig lift = new LiftConfig();
+
+    Servo servo1;
+    Servo servo2;
+    boolean leftBumperAlreadyPressed;
+
+    boolean servoIn;
+    public static int targetPosition = 0;
+    double magnitude = .8;
     public void init() {
         robot.init(hardwareMap, DcMotor.RunMode.RUN_USING_ENCODER);
+        lift.init(hardwareMap);
+        servo1 = hardwareMap.get(Servo.class,"claw1");
+        servo2 = hardwareMap.get(Servo.class,"claw2");
         telemetry.addData("Say", "Hello Driver");    //
         telemetry.update();
     }
 
+    public void start() {
+        gamepad1.rumble(1000);
+    }
+
     public void loop() {
+        telemetry.addData("Speed from 0-1.0 : adjust using dpad", magnitude);
+        if(gamepad1.dpad_up) {
+            magnitude += .01;
+        }
+        else if(gamepad1.dpad_down) {
+            magnitude -= .001;
+        }
         double y = -gamepad1.left_stick_y; // Remember, this is reversed!
         double x = gamepad1.left_stick_x * 1.1; // Counteract imperfect strafing
         double rx = gamepad1.right_stick_x;
@@ -74,19 +84,58 @@ public class MecanumTeleOp extends OpMode {
         // This ensures all the powers maintain the same ratio, but only when
         // at least one is out of the range [-1, 1]
         double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1);
-        double frontLeftPower = (y + x + rx) / denominator;
-        double backLeftPower = (y - x + rx) / denominator;
-        double frontRightPower = (y - x - rx) / denominator;
-        double backRightPower = (y + x - rx) / denominator;
+        double frontLeftPower = (y + x + rx) / denominator * magnitude;
+        double backLeftPower = (y - x + rx) / denominator * magnitude;
+        double frontRightPower = (y - x - rx) / denominator * magnitude;
+        double backRightPower = (y + x - rx) / denominator * magnitude;
 
         robot.leftFront.setPower(frontLeftPower);
         robot.leftRear.setPower(backLeftPower);
         robot.rightFront.setPower(frontRightPower);
         robot.rightRear.setPower(backRightPower);
-        telemetry.addData("lF", robot.leftFront.getCurrentPosition());
 
-        telemetry.addData("rR",robot.rightRear.getCurrentPosition());
-        telemetry.addData("rF",robot.rightFront.getCurrentPosition());
-        telemetry.addData("LR",robot.leftRear.getCurrentPosition());
+        lift.leftLift.setTargetPosition(targetPosition);
+        lift.rightLift.setTargetPosition(-targetPosition);
+
+        telemetry.addData("left",lift.leftLift.getCurrentPosition());
+        telemetry.addData("right", lift.rightLift.getCurrentPosition());
+
+        if(lift.liftBusy()) {
+            lift.leftLift.setPower(1.0);
+            lift.rightLift.setPower(1.0);
+        }
+        if(gamepad1.a) {
+            targetPosition = 1000;
+        }
+        if(gamepad1.y) {
+            targetPosition = 2300;
+        }
+        if(gamepad1.x) {
+            targetPosition = 1800;
+        }
+        else if(gamepad1.b){
+            targetPosition = 0;
+        }
+        if(gamepad1.left_bumper && !leftBumperAlreadyPressed) {
+            servoIn = !servoIn;
+            telemetry.addData("Motor", servoIn);
+            if(servoIn) {
+                servo1.setPosition(.7);
+                servo2.setPosition(.3);
+                targetPosition = 0;
+
+            }
+            else {
+                servo1.setPosition(.45);
+                servo2.setPosition(.55);
+                resetRuntime();
+            }
+        }
+        leftBumperAlreadyPressed = gamepad1.left_bumper;
+        if(getRuntime() >.5 && getRuntime() < .6) {
+            targetPosition = 150;
+        }
+        telemetry.addData("target pos",targetPosition);
+        telemetry.addData("Servo Position",servo1.getPosition());
     }
 }

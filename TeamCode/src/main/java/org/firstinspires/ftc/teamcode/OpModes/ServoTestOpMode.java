@@ -3,9 +3,8 @@ package org.firstinspires.ftc.teamcode.OpModes;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Servo;
-
 @TeleOp
-public class ServoTest extends OpMode {
+public class ServoTestOpMode extends OpMode {
     Servo servo;
     boolean aAlreadyPressed, servoOn;
     @Override
@@ -20,10 +19,10 @@ public class ServoTest extends OpMode {
             servoOn = !servoOn;
             telemetry.addData("Claw", servoOn);
             if(servoOn) {
-                servo.setPosition(0.7);
+                servo.setPosition(0.4);
             }
             else {
-                servo.setPosition(0.5);
+                servo.setPosition(0.6);
             }
         }
         aAlreadyPressed = gamepad1.a;

@@ -1,14 +1,12 @@
 package org.firstinspires.ftc.teamcode.OpModes.BeginnerOpModes;
 
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import org.firstinspires.ftc.teamcode.Hardware.ProgrammingBoard5;
-@Disabled
+import org.firstinspires.ftc.teamcode.Hardware.ColorSensorConfig;
 @TeleOp
 public class ColorOpMode extends OpMode {
-    ProgrammingBoard5 board = new ProgrammingBoard5();
+    ColorSensorConfig board = new ColorSensorConfig();
 
     public void init() {
         board.init(hardwareMap);
@@ -19,6 +17,7 @@ public class ColorOpMode extends OpMode {
         telemetry.addData("Blue", board.getAmountBlue());
         telemetry.addData("Green", board.getAmountGreen());
         telemetry.addData("Alpha", board.getAmountAlpha());
+        telemetry.addData("Selected Color", board.getMostColor());
 
     }
 }

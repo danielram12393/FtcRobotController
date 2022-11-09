@@ -20,6 +20,6 @@ public class ProgrammingForDerick {
     }
 
     public boolean isPressed() {
-        touchSensor.getState();
+        return touchSensor.getState();
     }
 }
